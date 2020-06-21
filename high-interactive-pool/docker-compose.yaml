@@ -1,0 +1,29 @@
+version: '3'
+services:
+  ubuntu-ssh:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'  # limit the usage of CPU to 25% of 400%
+          memory: 500M  # limit the usage of memory to 500MB
+
+
+
+
+
+
+
+
+
+
+    container_name: prod-ubuntu-ssh-k8s-edgenet-1
+    restart: always
+    cap_add: 
+      - NET_ADMIN
+    hostname: compute-node
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "51005:22"
+    cpus: 0.5
