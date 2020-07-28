@@ -1,29 +1,22 @@
-version: '3'
+version: '2.4'
+
 services:
   ubuntu-ssh:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'  # limit the usage of CPU to 25% of 400%
-          memory: 500M  # limit the usage of memory to 500MB
-
-
-
-
-
-
-
-
-
-
-    container_name: prod-ubuntu-ssh-k8s-edgenet-1
+    container_name: backend-pool-ssh-test
+ #   user: admin
     restart: always
-    cap_add: 
-      - NET_ADMIN
+    cap_drop:
+    - SETPCAP
+    - MKNOD
+    - NET_RAW
+    - DAC_OVERRIDE
+    - NET_BIND_SERVICE
     hostname: compute-node
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "51005:22"
+      - "51006:22222"
+    mem_limit: 500M  # limit the usage of memory to 500MB
+    mem_reservation: 50m  # limit the usage of CPU to 25% of 400%
     cpus: 0.5

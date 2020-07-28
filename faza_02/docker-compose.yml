@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  cowrie:
+    restart: always
+    image: cowrie/cowrie 
+    ports:
+      - "2222:2222"
+      - "2223:2223"
+    volumes:
+      - cowrie-etc:/cowrie/cowrie-git/etc:ro
+      - cowrie-var:/cowrie/cowrie-git/var
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION:-7.7.0}
+    hostname: "{{.Node.Hostname}}-filebeat"
+    volumes:
+      - cowrie-var:/usr/share/filebeat/cowrie_data:ro
+      - ${PWD}/config/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+    #disable strict permission checks
+    command: ["--strict.perms=false"]
+
+volumes:
+  cowrie-etc:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${PWD}/config/cowrie
+  cowrie-var:

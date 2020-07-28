@@ -1,0 +1,20 @@
+filebeat.inputs:
+- type: log
+  # Change to true to enable this input configuration.
+  enabled: true
+  # Paths that should be crawled and fetched. Glob based paths.
+  paths:
+    - /usr/share/filebeat/cowrie_data/log/cowrie/cowrie.json
+
+  json.keys_under_root: true
+  json.add_error_key: true  
+
+
+#----------------------------- Logstash output --------------------------------
+#The Console output writes events in JSON format to stdout.
+output.console:
+  #If pretty is set to true, events written to stdout will be nicely formatted. The default is false.
+  pretty: true
+# output.logstash:
+#   # The Logstash hosts
+#   hosts: ["212.235.185.38:5044"]
