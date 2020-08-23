@@ -6,7 +6,6 @@ services:
     image: cowrie/cowrie 
     ports:
       - "2222:2222"
-      - "2223:2223"
     volumes:
       - cowrie-etc:/cowrie/cowrie-git/etc:ro
       - cowrie-var:/cowrie/cowrie-git/var
@@ -16,7 +15,6 @@ services:
     volumes:
       - cowrie-var:/usr/share/filebeat/cowrie_data:ro
       - ${PWD}/config/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-    #disable strict permission checks
     command: ["--strict.perms=false"]
 
 volumes:
