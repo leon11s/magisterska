@@ -1,4 +1,4 @@
-# Vzpostavitev visoko interaktivnega sistema za opazovanje obnaˇsanja napadalcev
+# Vzpostavitev visoko interaktivnega sistema za opazovanje obnašanja napadalcev
 
 Repozitorji za gradiva magistrske naloge.
 

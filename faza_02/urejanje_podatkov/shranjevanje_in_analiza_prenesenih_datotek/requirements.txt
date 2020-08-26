@@ -1,0 +1,6 @@
+pandas
+pymysql
+sqlalchemy
+numpy
+requests
+pika

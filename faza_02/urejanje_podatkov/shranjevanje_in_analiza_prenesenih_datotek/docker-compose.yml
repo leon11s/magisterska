@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  cyberlab-files-analysis:
+    container_name: cyberlab-files-analysis
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/usr/src/app'
+    entrypoint: ['/usr/src/app/entrypoint.sh']

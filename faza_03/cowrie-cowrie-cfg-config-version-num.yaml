@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cowrie-cowrie-cfg-config-vXX-XX
+  labels:
+    name: cowrie-cowrie-cfg-config-vXX-XX
+data:
+  config: |-
+    [honeypot]
+    sensor_name=ubuntu_basic_pool
+
+    # Maximum file size (in bytes) for downloaded files to be stored in 'download_path'.
+    download_limit_size = 50000
+
+    # Hostname for the honeypot. Displayed by the shell prompt of the virtual
+    # environment
+    #
+    # (default: svr04)
+    hostname = compute-node
+
+    backend = proxy
+    interactive_timeout = 5000
+
+    [proxy]
+    # type of backend:
+    backend = simple
+
+    # =====================================
+    # Simple Backend Configuration
+    # =====================================
+    backend_ssh_host = XXX
+    backend_ssh_port = XXXXX
+
+    # =====================================
+    # Proxy Configurations
+    # =====================================
+
+    # real credentials to log into backend
+    backend_user = XXX
+    backend_pass = XXX
+

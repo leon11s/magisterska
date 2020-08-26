@@ -1,0 +1,147 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cowrie-deamonset-vXX-XX-XX
+spec:
+  selector:
+    matchLabels:
+      name: cowrie-deamonset-vXX-XX-XX
+  template:
+    metadata:
+      labels:
+        name: cowrie-deamonset-vXX-XX-XX
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: filebeat1
+        image: docker.elastic.co/beats/filebeat:7.6.0
+        resources:
+          limits:
+            memory: "125Mi"
+            cpu: "0.15"
+          requests:
+            memory: "125Mi"
+            cpu: "0.15"
+        env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: cowrie-log-volume
+          mountPath: /cowrie-data
+        - name: cowrie-filebeat1-config
+          mountPath: /usr/share/filebeat/filebeat.yml
+          subPath: filebeat.yml
+      - name: cowrie
+        image: cowrie/cowrie
+        resources:
+          limits:
+            memory: "125Mi"
+            cpu: "0.1"
+          requests:
+            memory: "125Mi"
+            cpu: "0.1"
+        ports:
+        - containerPort: 2222
+          name: cowrie-ssh
+          hostPort: 22
+        volumeMounts:
+        - name: cowrie-cowrie-cfg-config
+          mountPath: /cowrie/cowrie-git/etc/cowrie.cfg
+          subPath: cowrie.cfg
+        - name: cowrie-userdb-example-config
+          mountPath: /cowrie/cowrie-git/etc/userdb.example
+          subPath: userdb.example
+        - name: cowrie-userdb-txt-config
+          mountPath: /cowrie/cowrie-git/etc/userdb.txt
+          subPath: userdb.txt  
+        - name: cowrie-cowrie-cfg-dist-config
+          mountPath: /cowrie/cowrie-git/etc/cowrie.cfg.dist
+          subPath: cowrie.cfg.dist  
+        - name: cowrie-log-volume
+          mountPath: /cowrie/cowrie-git/var
+      - name: helper
+        image: alpine:3.2
+        resources:
+          limits:
+            memory: "50Mi"
+            cpu: "0.05"
+          requests:
+            memory: "50Mi"
+            cpu: "0.05"
+        command: ["/bin/sh", "-c"]
+        args:
+          - echo -e "#!/bin/sh\nrm -rf /cowrie-data/log/cowrie/cowrie.json.20*" > /etc/periodic/daily/remove-data;
+            chmod a+x /etc/periodic/daily/remove-data;
+            crond; 
+            while true;
+            do sleep 50;
+            done
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: cowrie-log-volume
+          mountPath: /cowrie-data
+      # These containers are run during pod initialization
+      initContainers:
+      - name: add-folders-to-empty-dir
+        image: busybox
+        command: ["/bin/sh", "-c"]
+        resources:
+          limits:
+            memory: "100Mi"
+            cpu: "0.1"
+          requests:
+            memory: "100Mi"
+            cpu: "0.1"
+        args:
+          - mkdir /work-dir/lib;
+            mkdir /work-dir/log;
+            mkdir /work-dir/run;
+            mkdir /work-dir/lib/cowrie;
+            mkdir /work-dir/lib/cowrie/downloads;
+            mkdir /work-dir/lib/cowrie/tty;
+            mkdir /work-dir/log/cowrie;
+            chown -R 1000:1000 /work-dir
+        volumeMounts:
+        - name: cowrie-log-volume
+          mountPath: /work-dir
+      volumes:
+      - name: cowrie-cowrie-cfg-config
+        configMap:
+          name: cowrie-cowrie-cfg-config-vXX-XX
+          items:
+          - key: config
+            path: cowrie.cfg
+      - name: cowrie-cowrie-cfg-dist-config
+        configMap:
+          name: cowrie-cowrie-cfg-dist-config-vXX-XX
+          items:
+          - key: config
+            path: cowrie.cfg.dist
+      - name: cowrie-userdb-example-config
+        configMap:
+          name: cowrie-userdb-example-config-vXX-XX
+          items:
+          - key: config
+            path: userdb.example
+      - name: cowrie-userdb-txt-config
+        configMap:
+          name: cowrie-userdb-txt-config-vXX-XX
+          items:
+          - key: config
+            path: userdb.txt
+      - name: cowrie-filebeat1-config
+        configMap:
+          name: cowrie-filebeat1-config-vXX-XX
+          items:
+          - key: config
+            path: filebeat.yml
+      - name: cowrie-log-volume
+        emptyDir: 
+          sizeLimit: 100Mi         
+      terminationGracePeriodSeconds: 30
+      nodeSelector:
+        kubernetes.io/hostname: node_name

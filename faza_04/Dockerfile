@@ -13,7 +13,7 @@ RUN apt-get update && \
 
 RUN mkdir /var/run/sshd && \
     useradd -ms /bin/bash admin && \
-    echo 'admin:Adahon_prod_past_123' | chpasswd && \
+    echo 'xxx:xxxx' | chpasswd && \
     sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
     sed -i "s/#Port 22/Port 22222/" /etc/ssh/sshd_config
 
